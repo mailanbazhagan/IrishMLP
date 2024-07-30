@@ -77,3 +77,32 @@ st.pyplot(fig)
 st.sidebar.subheader('Model Accuracy')
 accuracy = mlp.score(X_test_scaled, y_test)
 st.sidebar.write(f'Accuracy: {accuracy:.2f}')
+
+# Visualize MLP architecture
+def plot_mlp_architecture(mlp):
+    fig, ax = plt.subplots(figsize=(12, 8))
+    n_layers = len(mlp.coefs_) + 1
+    layer_sizes = [X.shape[1]] + list(mlp.hidden_layer_sizes) + [3]
+    
+    for i in range(n_layers):
+        layer_size = layer_sizes[i]
+        x = np.ones(layer_size) * i
+        y = np.linspace(0, 1, layer_size)
+        ax.scatter(x, y, s=100, c='blue', zorder=2)
+        
+        if i < n_layers - 1:
+            for j in range(layer_size):
+                for k in range(layer_sizes[i+1]):
+                    ax.plot([i, i+1], [y[j], np.linspace(0, 1, layer_sizes[i+1])[k]], 
+                            c='gray', alpha=0.2, zorder=1)
+    
+    ax.set_xticks(range(n_layers))
+    ax.set_xticklabels(['Input'] + [f'Hidden {i+1}' for i in range(n_layers-2)] + ['Output'])
+    ax.set_ylabel('Neurons')
+    ax.set_title('MLP Architecture')
+    plt.tight_layout()
+    return fig
+
+st.subheader('MLP Architecture')
+arch_fig = plot_mlp_architecture(mlp)
+st.pyplot(arch_fig)
